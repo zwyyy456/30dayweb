@@ -6,7 +6,7 @@ project(30dayweb)  # 指定项目名称
 include_directories(include day5/inc)
 
 # 添加可执行文件并指定源文件
-aux_source_directory(day5 serv)
+aux_source_directory(day6 serv)
 add_executable(server ${serv} util/util.cpp)
 
 add_executable(client client.cpp util/util.cpp)
