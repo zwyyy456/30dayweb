@@ -3,10 +3,10 @@ cmake_minimum_required(VERSION 3.0)  # 指定所需的CMake最低版本
 project(30dayweb)  # 指定项目名称
 
 # 设置包含头文件的目录
-include_directories(include day6/inc)
+include_directories(include day7/inc)
 
 # 添加可执行文件并指定源文件
-aux_source_directory(day6 serv)
+aux_source_directory(day7 serv)
 add_executable(server ${serv} util/util.cpp)
 
 add_executable(client client.cpp util/util.cpp)
