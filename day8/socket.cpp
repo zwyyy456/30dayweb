@@ -24,7 +24,7 @@ Socket::~Socket() {
 }
 
 void Socket::Bind(InetAddress *addr) {
-    errif(bind(fd, (sockaddr *)&(addr->addr), addr->addr_len) == -1, "socket bind error\n");
+    errif(bind(fd, (sockaddr *)&(addr->addr_), addr->addr_len_) == -1, "socket bind error\n");
 }
 
 void Socket::Listen() {
@@ -36,7 +36,7 @@ void Socket::Setnonblocking() {
 }
 
 int Socket::Accpet(InetAddress *addr) {
-    int clnt_sockfd = accept(fd, (sockaddr *)&(addr->addr), &(addr->addr_len));
+    int clnt_sockfd = accept(fd, (sockaddr *)&(addr->addr_), &(addr->addr_len_));
     errif(clnt_sockfd == -1, "socket accept error\n");
     return clnt_sockfd;
 }

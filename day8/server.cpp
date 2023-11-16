@@ -3,6 +3,7 @@
 #include "inet_address.h"
 #include "channel.h"
 #include "eventloop.h"
+#include "connection.h"
 
 #include <cstdio>
 #include <functional>
@@ -45,14 +46,15 @@ void Server::HandleReadEvent(int sockfd) {
     }
 }
 
-void Server::NewConn(Socket *serv_sock) {
-    InetAddress *clnt_addr = new InetAddress();
-    Socket *clnt_sock = new Socket(serv_sock->Accpet(clnt_addr));
-    printf("new client fd %d! IP: %s Port: %d\n", clnt_sock->getfd(), inet_ntoa(clnt_addr->addr.sin_addr), ntohs(clnt_addr->addr.sin_port));
-    clnt_sock->Setnonblocking();
-    int sockfd = clnt_sock->getfd();
-    Channel *clnt_ch = new Channel(loop_, sockfd);
-    std::function<void()> callback = [this, sockfd] { HandleReadEvent(sockfd); };
-    clnt_ch->set_callback(callback);
-    clnt_ch->EnableReading();
+void Server::NewConn(Socket *sock) {
+    auto *conn = new Connection(loop_, sock); // 这里应该是 clnt_sock
+    std::function<void(Socket *)> callback = [this](auto &&PH1) { DeleteConn(std::forward<decltype(PH1)>(PH1)); };
+    conn->set_delete_conn_callback(callback);
+    connections_[sock->getfd()] = conn;
+}
+
+void Server::DeleteConn(Socket *sock) {
+    Connection *conn = connections_[sock->getfd()];
+    connections_.erase(sock->getfd());
+    delete conn;
 }
