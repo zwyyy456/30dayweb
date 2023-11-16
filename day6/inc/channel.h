@@ -1,22 +1,26 @@
 #pragma once
 
+#include "server.h"
 #include <cstdint>
 #include <sys/epoll.h>
+#include <functional>
 
 class Epoll;
+class EventLoop;
 class Channel {
   private:
-    Epoll *ep;
+    EventLoop *loop_;
     int fd;
     uint32_t events;        // 要关注的事件
     uint32_t active_events; // 当前正在发生的事件
     bool in_epoll;
+    std::function<void()> callback_;
 
   public:
-    Channel(Epoll *_ep, int _fd);
+    Channel(EventLoop *loop, int _fd);
     ~Channel();
 
-    void enableReading();
+    void EnableReading();
 
     int getfd();
     uint32_t get_events();
@@ -25,4 +29,7 @@ class Channel {
     void set_in_epoll();
 
     void set_active_events(uint32_t _ev);
+    void set_callback(std::function<void()> &callback);
+
+    void HandleEvent();
 };

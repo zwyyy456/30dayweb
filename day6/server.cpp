@@ -1,62 +1,34 @@
+#include "server.h"
+#include "socket.h"
+#include "inet_address.h"
+#include "channel.h"
+#include "eventloop.h"
+
 #include <cstdio>
+#include <functional>
 #include <cstring>
 #include <unistd.h>
-#include <fcntl.h>
 #include <cerrno>
-#include <vector>
-#include "util.h"
-#include "epoll.h"
-#include "inet_address.h"
-#include "socket.h"
-#include "channel.h"
 
-#define MAX_EVENTS 1024
 #define READ_BUFFER 1024
 
-void setnonblocking(int fd) {
-    fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) | O_NONBLOCK);
-}
-
-void handleReadEvent(int);
-
-int main() {
+Server::Server(EventLoop *loop) :
+    loop_(loop) {
     Socket *serv_sock = new Socket();
     InetAddress *serv_addr = new InetAddress("127.0.0.1", 8888);
     serv_sock->Bind(serv_addr);
     serv_sock->Listen();
-    Epoll *ep = new Epoll();
     serv_sock->Setnonblocking();
-    Channel *serv_channel = new Channel(ep, serv_sock->getfd());
-    serv_channel->enableReading();
-    while (true) {
-        std::vector<Channel *> active_channels = ep->Poll();
-        int nfds = active_channels.size();
-        for (int i = 0; i < nfds; ++i) {
-            int chfd = active_channels[i]->getfd();
-            if (chfd == serv_sock->getfd()) {
-                InetAddress *clnt_addr = new InetAddress();
-                Socket *clnt_sock = new Socket(serv_sock->Accpet(clnt_addr));
-                printf("new client fd %d! IP: %s Port: %d\n", clnt_sock->getfd(), inet_ntoa(clnt_addr->addr.sin_addr), ntohs(clnt_addr->addr.sin_port));
-                clnt_sock->Setnonblocking();
-                Channel *clnt_ch = new Channel(ep, clnt_sock->getfd());
-                clnt_ch->enableReading();
-            } else if (active_channels[i]->get_active_events() & EPOLLIN) {
-                handleReadEvent(active_channels[i]->getfd());
-            } else {
-                // 其他事件，之后版本实现
-                printf("something else happened\n");
-            }
-        }
-    }
-    delete serv_sock;
-    delete serv_addr;
-    return 0;
+    Channel *serv_ch = new Channel(loop, serv_sock->getfd());
+    std::function<void()> cb = [this, serv_sock] { NewConn(serv_sock); };
+    serv_ch->set_callback(cb);
+    serv_ch->EnableReading();
 }
 
-void handleReadEvent(int sockfd) {
+void Server::HandleReadEvent(int sockfd) {
     char buf[READ_BUFFER];
-    while (true) { //由于使用非阻塞IO，读取客户端buffer，一次读取buf大小数据，直到全部读取完毕
-        bzero(&buf, sizeof(buf));
+    while (true) {
+        memset(buf, 0, sizeof(buf));
         ssize_t bytes_read = read(sockfd, buf, sizeof(buf));
         if (bytes_read > 0) {
             printf("message from client fd %d: %s\n", sockfd, buf);
@@ -73,4 +45,16 @@ void handleReadEvent(int sockfd) {
             break;
         }
     }
+}
+
+void Server::NewConn(Socket *serv_sock) {
+    InetAddress *clnt_addr = new InetAddress();
+    Socket *clnt_sock = new Socket(serv_sock->Accpet(clnt_addr));
+    printf("new client fd %d! IP: %s Port: %d\n", clnt_sock->getfd(), inet_ntoa(clnt_addr->addr.sin_addr), ntohs(clnt_addr->addr.sin_port));
+    clnt_sock->Setnonblocking();
+    int sockfd = clnt_sock->getfd();
+    Channel *clnt_ch = new Channel(loop_, sockfd);
+    std::function<void()> callback = [this, sockfd] { HandleReadEvent(sockfd); };
+    clnt_ch->set_callback(callback);
+    clnt_ch->EnableReading();
 }
