@@ -13,16 +13,14 @@
 #define READ_BUFFER 1024
 
 Server::Server(EventLoop *loop) :
-    loop_(loop) {
-    Socket *serv_sock = new Socket();
-    InetAddress *serv_addr = new InetAddress("127.0.0.1", 8888);
-    serv_sock->Bind(serv_addr);
-    serv_sock->Listen();
-    serv_sock->Setnonblocking();
-    Channel *serv_ch = new Channel(loop, serv_sock->getfd());
-    std::function<void()> cb = [this, serv_sock] { NewConn(serv_sock); };
-    serv_ch->set_callback(cb);
-    serv_ch->EnableReading();
+    loop_(loop), acceptor_(nullptr) {
+    acceptor_ = new Acceptor(loop);
+    std::function<void(Socket *)> callback = [this](auto &&PH1) { NewConn(std::forward<decltype(PH1)>(PH1)); };
+    acceptor_->set_new_conn_callback(callback);
+}
+
+Server::~Server() {
+    delete acceptor_;
 }
 
 void Server::HandleReadEvent(int sockfd) {
