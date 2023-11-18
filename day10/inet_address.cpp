@@ -25,7 +25,7 @@ InetAddress::InetAddress(const char *ip, uint16_t port) :
 
 void InetAddress::set_inetaddr(sockaddr_in addr, socklen_t addr_len) {
     addr_ = addr;
-    addr_len_ = addr_len_;
+    addr_len_ = addr_len;
 }
 
 sockaddr_in InetAddress::get_addr() {
