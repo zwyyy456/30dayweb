@@ -7,7 +7,7 @@ ThreadPool::ThreadPool(int size) :
     stop_(false) {
     for (int i = 0; i < size; ++i) {
         // 线程创建成功
-        /* printf("create thread!\n"); */
+        printf("create thread!\n");
         auto func = [this]() {
             while (true) {
                 std::function<void()> task;
@@ -20,13 +20,16 @@ ThreadPool::ThreadPool(int size) :
                         return;
                     }
                     task = tasks_.front();
+                    printf("get task\n");
                     tasks_.pop();
                 }
+                printf("run task!\n");
                 task();
             }
         };
         threads_.emplace_back(func);
     }
+    printf("thread count: %d\n", threads_.size());
 }
 
 ThreadPool::~ThreadPool() {
@@ -45,9 +48,11 @@ ThreadPool::~ThreadPool() {
 void ThreadPool::add_task(std::function<void()> func) {
     {
         std::unique_lock<std::mutex> lock(tasks_mtx_);
+        printf("add task\n");
         if (stop_) {
             throw std::runtime_error("ThreadPool already stop, can't add task any more");
         }
         tasks_.emplace(func);
+        cv_.notify_one();
     }
 }
