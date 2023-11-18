@@ -9,7 +9,7 @@
 Acceptor::Acceptor(EventLoop *loop) :
     loop_(loop), sock_(nullptr), accept_ch_(nullptr), addr_(nullptr) {
     sock_ = new Socket();
-    addr_ = new InetAddress("127.0.0.1", 1234);
+    addr_ = new InetAddress("127.0.0.1", 6789);
     sock_->Bind(addr_);
     sock_->Listen();
     sock_->Setnonblocking();

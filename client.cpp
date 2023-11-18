@@ -3,6 +3,7 @@
 #include <arpa/inet.h>
 #include <cstring>
 #include <unistd.h>
+#include <cstdio>
 #include "util.h"
 
 #define BUFFER_SIZE 1024
@@ -15,8 +16,9 @@ int main() {
     bzero(&serv_addr, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
-    serv_addr.sin_port = htons(1234);
+    serv_addr.sin_port = htons(6791);
 
+    printf("to connect!\n");
     errif(connect(sockfd, (sockaddr *)&serv_addr, sizeof(serv_addr)) == -1, "socket connect error");
 
     while (true) {

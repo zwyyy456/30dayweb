@@ -1,10 +1,13 @@
 #include "thread_pool.h"
 #include <functional>
+#include <cstdio>
 #include <mutex>
 
 ThreadPool::ThreadPool(int size) :
     stop_(false) {
     for (int i = 0; i < size; ++i) {
+        // 线程创建成功
+        /* printf("create thread!\n"); */
         auto func = [this]() {
             while (true) {
                 std::function<void()> task;
