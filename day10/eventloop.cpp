@@ -1,8 +1,10 @@
 
 #include "eventloop.h"
+#include "thread_pool.h"
 EventLoop::EventLoop() :
-    ep_(nullptr), quit_(false) {
+    ep_(nullptr), thread_pool_(nullptr), quit_(false) {
     ep_ = new Epoll();
+    thread_pool_ = new ThreadPool();
 }
 
 EventLoop::~EventLoop() {
@@ -20,4 +22,8 @@ void EventLoop::Loop() {
 
 void EventLoop::UpdateChannel(Channel *ch) {
     ep_->UpdateChannel(ch);
+}
+
+void EventLoop::add_thread(std::function<void()> func) {
+    thread_pool_->add_task(func);
 }
