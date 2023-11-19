@@ -23,5 +23,5 @@ class Acceptor {
 
     void AcceptConn();
 
-    void set_new_conn_callback(std::function<void(Socket *)> &callback);
+    void set_new_conn_callback(const std::function<void(Socket *)> &callback);
 };

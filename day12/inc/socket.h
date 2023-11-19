@@ -18,6 +18,7 @@ class Socket {
     int Accpet(InetAddress *);
 
     void Connect(InetAddress *);
+    void Connect(InetAddress *, int sockfd);
 
     int getfd();
 };

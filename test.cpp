@@ -12,9 +12,13 @@
 
 void oneClient(int msgs, int wait) {
     Socket *sock = new Socket();
+
     auto *addr = new InetAddress("127.0.0.1", 6789);
+    // printf("addr: %s sin_family: %d ", inet_ntoa(addr->get_addr().sin_addr), addr->get_addr().sin_family);
     std::cout << "start connect!\n";
     sock->Connect(addr);
+    // auto serv_addr = addr->get_addr();
+    // errif(connect(fd, reinterpret_cast<sockaddr *>(&serv_addr), sizeof(serv_addr)) == -1, "socket connect error");
     int sockfd = sock->getfd();
 
     Buffer *sendBuffer = new Buffer();

@@ -2,8 +2,8 @@
 #include "util.h"
 #include "socket.h"
 #include <cstring>
-#include <netinet/in.h>
 #include <sys/socket.h>
+#include <arpa/inet.h>
 #include <unistd.h>
 #include <fcntl.h>
 
@@ -49,8 +49,13 @@ int Socket::Accpet(InetAddress *addr) {
 }
 
 void Socket::Connect(InetAddress *addr) {
+    auto serv_addr = addr->get_addr();
+    errif(connect(fd, (sockaddr *)&serv_addr, sizeof(serv_addr)) == -1, "socket connect error");
+}
+
+void Socket::Connect(InetAddress *addr, int sockfd) {
     struct sockaddr_in clnt_addr = addr->get_addr();
-    errif(connect(fd, (sockaddr *)&addr, sizeof(clnt_addr)) == -1, "socket connect error");
+    errif(connect(fd, (sockaddr *)&clnt_addr, sizeof(clnt_addr)) == -1, "socket connect error");
 }
 
 int Socket::getfd() {

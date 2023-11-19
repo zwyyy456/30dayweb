@@ -36,6 +36,6 @@ void Acceptor::AcceptConn() {
     delete clnt_addr;
 }
 
-void Acceptor::set_new_conn_callback(std::function<void(Socket *)> &callback) {
+void Acceptor::set_new_conn_callback(const std::function<void(Socket *)> &callback) {
     new_conn_callback_ = callback;
 }

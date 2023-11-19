@@ -8,7 +8,7 @@ Buffer::Buffer() {
 Buffer::~Buffer() {
 }
 
-void Buffer::append(const char *_str, int _size) {
+void Buffer::Append(const char *_str, int _size) {
     for (int i = 0; i < _size; ++i) {
         if (_str[i] == '\0') {
             break;
@@ -25,11 +25,11 @@ auto Buffer::c_str() -> const char * {
     return buf_.c_str();
 }
 
-void Buffer::clear() {
+void Buffer::Clear() {
     buf_.clear();
 }
 
-void Buffer::getline() {
+void Buffer::Getline() {
     buf_.clear();
     std::getline(std::cin, buf_);
 }
