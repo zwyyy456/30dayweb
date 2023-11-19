@@ -8,14 +8,13 @@
 #include "socket.h"
 #include "thread_pool.h"
 
-using namespace std;
+// using namespace std;
 
 void oneClient(int msgs, int wait) {
     Socket *sock = new Socket();
-    InetAddress *addr = new InetAddress("127.0.0.1", 6789);
+    auto *addr = new InetAddress("127.0.0.1", 6789);
     std::cout << "start connect!\n";
     sock->Connect(addr);
-
     int sockfd = sock->getfd();
 
     Buffer *sendBuffer = new Buffer();
@@ -62,13 +61,13 @@ int main(int argc, char *argv[]) {
     while ((o = getopt(argc, argv, optstring)) != -1) {
         switch (o) {
         case 't':
-            threads = stoi(optarg);
+            threads = std::stoi(optarg);
             break;
         case 'm':
-            msgs = stoi(optarg);
+            msgs = std::stoi(optarg);
             break;
         case 'w':
-            wait = stoi(optarg);
+            wait = std::stoi(optarg);
             break;
         case '?':
             printf("error optopt: %c\n", optopt);
