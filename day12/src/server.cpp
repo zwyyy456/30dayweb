@@ -28,7 +28,7 @@ Server::Server(EventLoop *loop) :
 
     for (int i = 0; i < size; ++i) {
         auto sub_loop = [capture0 = sub_reactors_[i]] { capture0->Loop(); };
-        thpool_->add_task(sub_loop);
+        thpool_->add_task(std::move(sub_loop));
     }
 }
 

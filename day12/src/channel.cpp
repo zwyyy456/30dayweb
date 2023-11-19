@@ -53,7 +53,7 @@ void Channel::set_active_events(uint32_t _ev) {
     active_events_ = _ev;
 }
 
-void Channel::set_read_callback(std::function<void()> &callback) {
+void Channel::set_read_callback(const std::function<void()> &callback) {
     read_callback_ = callback;
 }
 

@@ -40,7 +40,7 @@ void Connection::echo(int sockfd) {
         memset(buf, 0, sizeof(buf));
         ssize_t bytes_read = read(sockfd, buf, sizeof(buf));
         if (bytes_read > 0) {
-            read_buffer_->append(buf, bytes_read);       // 将数据从 buf 读取到 buffer 类中
+            read_buffer_->Append(buf, bytes_read);       // 将数据从 buf 读取到 buffer 类中
         } else if (bytes_read == -1 && errno == EINTR) { //客户端正常中断、继续读取
             printf("continue reading");
             continue;

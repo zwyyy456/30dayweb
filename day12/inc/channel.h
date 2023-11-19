@@ -33,7 +33,7 @@ class Channel {
 
     void UseEt();
     void set_active_events(uint32_t ev);
-    void set_read_callback(std::function<void()> &callback);
+    void set_read_callback(const std::function<void()> &callback);
 
     // void set_use_threadpool(bool use = true);
 };

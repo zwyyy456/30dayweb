@@ -24,8 +24,8 @@ Acceptor::Acceptor(EventLoop *loop) :
 }
 
 Acceptor::~Acceptor() {
-    delete sock_;
     delete accept_ch_;
+    delete sock_;
 }
 void Acceptor::AcceptConn() {
     auto *clnt_addr = new InetAddress();

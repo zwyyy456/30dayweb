@@ -8,8 +8,8 @@
 
 class Epoll {
   private:
-    int epfd;
-    struct epoll_event *events;
+    int epfd_;
+    struct epoll_event *events_;
 
   public:
     Epoll();
